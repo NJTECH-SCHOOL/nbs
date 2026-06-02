@@ -451,7 +451,6 @@
       outline: none;
     }
 
-    /* Enhanced External CTA Button */
     .external-site-cta {
       display: inline-flex;
       align-items: center;
@@ -665,7 +664,6 @@
             <span><i class="fa-regular fa-clock"></i> <span id="ep-duration">0:00</span></span>
             <span><i class="fa-regular fa-calendar"></i> June 2026</span>
           </div>
-          <!-- CTA link that opens corresponding external line/site -->
           <a id="ep-external-link" href="#" target="_blank" class="external-site-cta">
             <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Episode on Google Sites
           </a>
@@ -675,7 +673,26 @@
         </div>
       </div>
 
-
+      <div class="player-showcase">
+        <div class="video-container" id="video-box">
+          <video id="main-video" class="custom-video" controls></video>
+        </div>
+        
+        <div class="player-row">
+          <button class="huge-play-button" id="play-btn" onclick="togglePlayPause()">
+            <i class="fa-solid fa-play" id="play-icon"></i>
+          </button>
+          
+          <div class="huge-timeline-wrapper">
+            <div class="huge-timeline-track" id="timeline-track" onclick="seekMedia(event)">
+              <div class="huge-timeline-fill" id="timeline-fill"></div>
+            </div>
+            <div class="huge-timeline-times">
+              <span id="time-current">0:00</span>
+              <span id="time-total">0:00</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="episode-body">
@@ -754,6 +771,7 @@
     let activeEpisodeId = null;
     const audioPlayer = document.getElementById('hidden-audio');
     const videoPlayer = document.getElementById('main-video');
+    const videoContainer = document.getElementById('video-box');
     let trackingInterval = null;
 
     function showHomeView(e) {
@@ -782,7 +800,6 @@
       document.getElementById('ep-title').textContent = data.title;
       document.getElementById('ep-description').textContent = data.description;
       
-      // Setup the Google Sites direct target URL
       const externalLinkBtn = document.getElementById('ep-external-link');
       if (data.externalUrl) {
         externalLinkBtn.href = data.externalUrl;
@@ -810,6 +827,113 @@
           epView.classList.add('active');
         }, 50);
       }, 400);
+    }
+
+    // RESTORED: Formats raw seconds into reader-friendly time stamps (M:SS)
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "0:00";
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    // RESTORED: Orchestrates current media element selections and loads metadata
+    function renderPlayerUI() {
+      const data = episodesData[activeEpisodeId];
+      
+      // Reset defaults
+      document.getElementById('timeline-fill').style.width = '0%';
+      document.getElementById('time-current').textContent = '0:00';
+      document.getElementById('time-total').textContent = '0:00';
+      document.getElementById('play-icon').className = 'fa-solid fa-play';
+
+      if (data.type === 'video') {
+        videoContainer.style.display = 'flex';
+        videoPlayer.src = data.src;
+        videoPlayer.load();
+        videoPlayer.onloadedmetadata = function() {
+          document.getElementById('time-total').textContent = formatTime(videoPlayer.duration);
+          document.getElementById('ep-duration').textContent = formatTime(videoPlayer.duration);
+        };
+      } else {
+        videoContainer.style.display = 'none';
+        audioPlayer.src = data.src;
+        audioPlayer.load();
+        audioPlayer.onloadedmetadata = function() {
+          document.getElementById('time-total').textContent = formatTime(audioPlayer.duration);
+          document.getElementById('ep-duration').textContent = formatTime(audioPlayer.duration);
+        };
+      }
+    }
+
+    // RESTORED: Handles play and pause triggers across video vs audio tracks
+    function togglePlayPause() {
+      const data = episodesData[activeEpisodeId];
+      const activeElement = data.type === 'video' ? videoPlayer : audioPlayer;
+      const playIcon = document.getElementById('play-icon');
+
+      if (activeElement.paused) {
+        activeElement.play();
+        playIcon.className = 'fa-solid fa-pause';
+        startTrackingProgress(activeElement);
+      } else {
+        activeElement.pause();
+        playIcon.className = 'fa-solid fa-play';
+        clearInterval(trackingInterval);
+      }
+    }
+
+    // RESTORED: Updates the progress fill tracking interval
+    function startTrackingProgress(element) {
+      clearInterval(trackingInterval);
+      trackingInterval = setInterval(() => {
+        if (!element.paused) {
+          updateTimelineProgress(element);
+        }
+      }, 250);
+    }
+
+    // RESTORED: Alters timeline nodes to map matching percentages visually
+    function updateTimelineProgress(element) {
+      const progressFill = document.getElementById('timeline-fill');
+      const timeCurrentText = document.getElementById('time-current');
+      
+      if (element.duration) {
+        const percent = (element.currentTime / element.duration) * 100;
+        progressFill.style.width = `${percent}%`;
+        timeCurrentText.textContent = formatTime(element.currentTime);
+      }
+    }
+
+    // RESTORED: Lets users click anywhere along the progress rail to scrub tracks
+    function seekMedia(event) {
+      if (!activeEpisodeId) return;
+      const data = episodesData[activeEpisodeId];
+      const activeElement = data.type === 'video' ? videoPlayer : audioPlayer;
+      
+      const track = document.getElementById('timeline-track');
+      const rect = track.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+      const width = rect.width;
+      
+      const percentage = Math.min(Math.max(clickX / width, 0), 1);
+      if (activeElement.duration) {
+        activeElement.currentTime = percentage * activeElement.duration;
+        updateTimelineProgress(activeElement);
+      }
+    }
+
+    // RESTORED: Drops all active playback cycles cleanly when switching views
+    function stopActiveMedia() {
+      clearInterval(trackingInterval);
+      videoPlayer.pause();
+      videoPlayer.src = "";
+      audioPlayer.pause();
+      audioPlayer.src = "";
+      videoContainer.style.display = 'none';
+      
+      const playIcon = document.getElementById('play-icon');
+      if (playIcon) playIcon.className = 'fa-solid fa-play';
     }
   </script>
 </body>
