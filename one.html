@@ -451,6 +451,46 @@
       outline: none;
     }
 
+    /* Enhanced External CTA Button */
+    .external-site-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #ffffff;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 1.1rem 2rem;
+      border-radius: 1rem;
+      text-decoration: none;
+      border: 1px solid #334155;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    @media (min-width: 640px) {
+      .external-site-cta {
+        width: auto;
+        align-self: flex-start;
+      }
+    }
+
+    .external-site-cta:hover {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+    }
+
+    .external-site-cta:active {
+      transform: translateY(0);
+    }
+
     .episode-body {
       border-top: 1px solid #e2e8f0;
       padding-top: 3rem;
@@ -625,6 +665,10 @@
             <span><i class="fa-regular fa-clock"></i> <span id="ep-duration">0:00</span></span>
             <span><i class="fa-regular fa-calendar"></i> June 2026</span>
           </div>
+          <!-- CTA link that opens corresponding external line/site -->
+          <a id="ep-external-link" href="#" target="_blank" class="external-site-cta">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Episode on Google Sites
+          </a>
         </div>
         <div class="episode-hero-image-wrapper">
           <img id="ep-image" class="episode-hero-image" src="" alt="Episode Banner" onerror="this.src='https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=500&auto=format&fit=crop'">
@@ -681,6 +725,7 @@
         img: "episode1.png",
         imgFallback: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=500&auto=format&fit=crop",
         description: "In this episode, Brandon and Sofia interview cult classic celebrity Jack Claw, in a Frankenstein-esque revival. How's he been? What's he doing? And most importantly, how does one be a niche cult classic, over the choice of mainstream popularity?",
+        externalUrl: "https://sites.google.com/lynnroseheights.org/nbs/one"
       },
       2: {
         tag: "Episode 2",
@@ -690,6 +735,7 @@
         img: "episode2.png",
         imgFallback: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=500&auto=format&fit=crop",
         description: "In this episode, Brandon, Neehal, and Sofia discuss feminism as of right now. Is it too talked about? Is it under-talked about? Or is it the way we talk about it? Join us as we have an open talk, laugh a little, and be a tad afraid of some bees.",
+        externalUrl: "https://sites.google.com/lynnroseheights.org/nbs/three"
       },
       3: {
         tag: "Episode 3",
@@ -699,6 +745,7 @@
         img: "episode3.png",
         imgFallback: "https://images.unsplash.com/photo-1610116306796-6fea9f4fae38?q=80&w=500&auto=format&fit=crop",
         description: "This podcast explores why many white influencers and celebrities adopt trends, styles, and features associated with Black culture while Black people have often been criticized for those same things. It examines social media, beauty standards, profit, and cultural influence, while discussing the double standards that can exist when trends move from Black communities into mainstream culture.",
+        externalUrl: "https://sites.google.com/lynnroseheights.org/nbs/home"
       },
       4: {
         tag: "Episode 4",
@@ -708,6 +755,7 @@
         img: "two.png",
         imgFallback: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=500&auto=format&fit=crop",
         description: "In this episode, Sofia dives into the web of the Riot Grrrl movement, in order to find whether or not we should have a comeback of the movement. It is in tandem with misogyny, the patriarchy, some great music, and of course, punk.",
+        externalUrl: "https://sites.google.com/lynnroseheights.org/nbs/two"
       },
       5: {
         tag: "Episode 5",
@@ -717,6 +765,7 @@
         img: "episode5.png",
         imgFallback: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=500&auto=format&fit=crop",
         description: "Initially, Area 51 was just a secret military base, although it quickly became one of the world's biggest mysteries. Moreover, its connection to aliens, conspiracies, and internet culture has fascinated millions of people and continues to spark debate today.",
+        externalUrl: "https://sites.google.com/lynnroseheights.org/nbs/four"
       }
     };
 
@@ -750,6 +799,15 @@
       document.getElementById('ep-tag').textContent = data.tag;
       document.getElementById('ep-title').textContent = data.title;
       document.getElementById('ep-description').textContent = data.description;
+      
+      // Setup the Google Sites direct target URL
+      const externalLinkBtn = document.getElementById('ep-external-link');
+      if (data.externalUrl) {
+        externalLinkBtn.href = data.externalUrl;
+        externalLinkBtn.style.display = 'inline-flex';
+      } else {
+        externalLinkBtn.style.display = 'none';
+      }
       
       const epImage = document.getElementById('ep-image');
       epImage.src = data.img;
