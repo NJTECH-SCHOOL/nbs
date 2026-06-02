@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NBS HOME</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    header {
+      background-color: #ffffff;
+      border-bottom: 1px solid #f1f5f9;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .nav-container {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-logo {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #0f172a;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-logo i {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #64748b;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: #3b82f6;
+    }
+
+    .view-section {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .view-section.active {
+      display: block;
+      opacity: 1;
+    }
+
+    main {
+      max-width: 54rem;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+      min-height: calc(100vh - 15rem);
+    }
+
+    .welcome-banner {
+      margin-bottom: 3.5rem;
+      text-align: left;
+    }
+
+    .welcome-banner h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.04em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(to right, #0f172a, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .welcome-banner p {
+      font-size: 1.05rem;
+      color: #64748b;
+      line-height: 1.6;
+      max-width: 36rem;
+      font-weight: 400;
+    }
+
+    .podcast-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .podcast-card {
+      position: relative;
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 1.25rem;
+      padding: 1.5rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .podcast-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 4px;
+      background: linear-gradient(to bottom, #3b82f6, #6366f1);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .podcast-card:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(59, 130, 246, 0.05);
+    }
+
+    .podcast-card:hover::before {
+      opacity: 1;
+    }
+
+    .podcast-info {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .podcast-number {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      min-width: 2.5rem;
+    }
+
+    .podcast-card:hover .podcast-number {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .podcast-thumbnail-wrapper {
+      width: 4.5rem;
+      height: 4.5rem;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      background-color: #f1f5f9;
+      flex-shrink: 0;
+    }
+
+    .podcast-thumbnail {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .podcast-card:hover .podcast-thumbnail {
+      transform: scale(1.08);
+    }
+
+    .podcast-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .podcast-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      transition: color 0.2s ease;
+      line-height: 1.35;
+    }
+
+    .podcast-card:hover .podcast-title {
+      color: #3b82f6;
+    }
+
+    .podcast-meta {
+      font-size: 0.8rem;
+      color: #64748b;
+      display: flex;
+      gap: 1.25rem;
+      font-weight: 600;
+    }
+
+    .podcast-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .podcast-meta span i {
+      color: #3b82f6;
+    }
+
+    .listen-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      color: #2563eb;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 999px;
+      transition: all 0.2s ease;
+      border: 1px solid #bfdbfe;
+      flex-shrink: 0;
+    }
+
+    .podcast-card:hover .listen-badge {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+    }
+
+    .back-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 700;
+      margin-bottom: 2.5rem;
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: color 0.2s ease;
+    }
+
+    .back-nav:hover {
+      color: #3b82f6;
+    }
+
+    .episode-hero {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    @media (min-width: 640px) {
+      .episode-hero {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .episode-hero-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .episode-hero-image-wrapper {
+      width: 100%;
+      max-width: 14rem;
+      aspect-ratio: 1 / 1;
+      border-radius: 1.25rem;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      background-color: #ffffff;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 640px) {
+      .episode-hero-image-wrapper {
+        max-width: 100%;
+        aspect-ratio: 16 / 9;
+      }
+    }
+
+    .episode-hero-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .episode-tag {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      align-self: flex-start;
+    }
+
+    .episode-page-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.04em;
+      line-height: 1.2;
+    }
+
+    .player-showcase {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      margin-bottom: 3rem;
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.02);
+    }
+
+    .player-row {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .huge-play-button {
+      width: 4.5rem;
+      height: 4.5rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      transition: all 0.25s ease;
+      flex-shrink: 0;
+      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+    }
+
+    .huge-play-button:hover {
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      transform: scale(1.05);
+      box-shadow: 0 12px 24px rgba(59, 130, 246, 0.3);
+    }
+
+    .huge-play-button:active {
+      transform: scale(0.95);
+    }
+
+    .huge-timeline-wrapper {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .huge-timeline-track {
+      height: 6px;
+      background-color: #f1f5f9;
+      border-radius: 999px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .huge-timeline-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, #3b82f6, #6366f1);
+      border-radius: 999px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .huge-timeline-times {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #64748b;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 600;
+    }
+
+    .video-container {
+      width: 100%;
+      background-color: #000000;
+      border-radius: 1rem;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .custom-video {
+      width: 100%;
+      height: 100%;
+      outline: none;
+    }
+
+    .episode-body {
+      border-top: 1px solid #e2e8f0;
+      padding-top: 3rem;
+    }
+
+    .episode-body h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 1rem;
+    }
+
+    .episode-body p {
+      font-size: 1.05rem;
+      color: #475569;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      font-weight: 400;
+    }
+
+    footer {
+      border-top: 1px solid #e2e8f0;
+      padding: 2.5rem 0;
+      background-color: #ffffff;
+      margin-top: 4rem;
+    }
+
+    .footer-container {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer-container {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="nav-container">
+      <a href="#" onclick="showHomeView(event)" class="nav-logo">
+        <i class="fa-solid fa-headphones"></i> NBS
+      </a>
+      <ul class="nav-links">
+        <li><a href="#" onclick="showHomeView(event)">Episodes</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <div id="home-view" class="view-section active">
+      <section class="welcome-banner">
+        <h1>Podcast Episodes</h1>
+        <p>Explore NBS's dedication on unraveling beyond the topic, and into the greater impact. Through out, we seek through debates, interview, and with a solo-cast.</p>
+      </section>
+
+      <section class="podcast-list">
+        
+        <div class="podcast-card" onclick="openEpisodePage(1)">
+          <div class="podcast-info">
+            <span class="podcast-number">01</span>
+            <div class="podcast-thumbnail-wrapper">
+              <img class="podcast-thumbnail" src="episode1.png" alt="Episode 1 Cover" onerror="this.src='https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=250&auto=format&fit=crop'">
+            </div>
+            <div class="podcast-details">
+              <h2 class="podcast-title">The Resurrection of Jack Claw-Nicheness or Fame?</h2>
+              <div class="podcast-meta">
+                <span><i class="fa-solid fa-video"></i> Video Track</span>
+                <span><i class="fa-solid fa-layer-group"></i> Episode 1</span>
+              </div>
+            </div>
+          </div>
+          <span class="listen-badge">View Episode <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+
+        <div class="podcast-card" onclick="openEpisodePage(2)">
+          <div class="podcast-info">
+            <span class="podcast-number">02</span>
+            <div class="podcast-thumbnail-wrapper">
+              <img class="podcast-thumbnail" src="episode2.png" alt="Episode 2 Cover" onerror="this.src='https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=250&auto=format&fit=crop'">
+            </div>
+            <div class="podcast-details">
+              <h2 class="podcast-title">Did Girl Power Lose Power?</h2>
+              <div class="podcast-meta">
+                <span><i class="fa-solid fa-video"></i> Video Track</span>
+                <span><i class="fa-solid fa-layer-group"></i> Episode 2</span>
+              </div>
+            </div>
+          </div>
+          <span class="listen-badge">View Episode <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+
+        <div class="podcast-card" onclick="openEpisodePage(3)">
+          <div class="podcast-info">
+            <span class="podcast-number">03</span>
+            <div class="podcast-thumbnail-wrapper">
+              <img class="podcast-thumbnail" src="episode3.png" alt="Episode 3 Cover" onerror="this.src='https://images.unsplash.com/photo-1610116306796-6fea9f4fae38?q=80&w=250&auto=format&fit=crop'">
+            </div>
+            <div class="podcast-details">
+              <h2 class="podcast-title">Beauty and Bias</h2>
+              <div class="podcast-meta">
+                <span><i class="fa-solid fa-volume-high"></i> Audio Track</span>
+                <span><i class="fa-solid fa-layer-group"></i> Episode 3</span>
+              </div>
+            </div>
+          </div>
+          <span class="listen-badge">View Episode <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+
+        <div class="podcast-card" onclick="openEpisodePage(4)">
+          <div class="podcast-info">
+            <span class="podcast-number">04</span>
+            <div class="podcast-thumbnail-wrapper">
+              <img class="podcast-thumbnail" src="two.png" alt="Episode 4 Cover" onerror="this.src='https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=250&auto=format&fit=crop'">
+            </div>
+            <div class="podcast-details">
+              <h2 class="podcast-title">Should Riot Grrrl Come Back?</h2>
+              <div class="podcast-meta">
+                <span><i class="fa-solid fa-volume-high"></i> Audio Track</span>
+                <span><i class="fa-solid fa-layer-group"></i> Episode 4</span>
+              </div>
+            </div>
+          </div>
+          <span class="listen-badge">View Episode <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+
+        <div class="podcast-card" onclick="openEpisodePage(5)">
+          <div class="podcast-info">
+            <span class="podcast-number">05</span>
+            <div class="podcast-thumbnail-wrapper">
+              <img class="podcast-thumbnail" src="episode5.png" alt="Episode 5 Cover" onerror="this.src='https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=250&auto=format&fit=crop'">
+            </div>
+            <div class="podcast-details">
+              <h2 class="podcast-title">Beyond the UFO</h2>
+              <div class="podcast-meta">
+                <span><i class="fa-solid fa-volume-high"></i> Audio Track</span>
+                <span><i class="fa-solid fa-layer-group"></i> Episode 5</span>
+              </div>
+            </div>
+          </div>
+          <span class="listen-badge">View Episode <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+
+      </section>
+    </div>
+
+    <div id="episode-view" class="view-section">
+      <button class="back-nav" onclick="showHomeView(event)">
+        <i class="fa-solid fa-chevron-left"></i> Back to all episodes
+      </button>
+
+      <div class="episode-hero">
+        <div class="episode-hero-text">
+          <span id="ep-tag" class="episode-tag">Episode 1</span>
+          <h2 id="ep-title" class="episode-page-title">The Resurrection of Jack Claw-Nicheness or Fame?</h2>
+          <div class="podcast-meta">
+            <span><i class="fa-regular fa-clock"></i> <span id="ep-duration">0:00</span></span>
+            <span><i class="fa-regular fa-calendar"></i> June 2026</span>
+          </div>
+        </div>
+        <div class="episode-hero-image-wrapper">
+          <img id="ep-image" class="episode-hero-image" src="" alt="Episode Banner" onerror="this.src='https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=500&auto=format&fit=crop'">
+        </div>
+      </div>
+
+      <div class="player-showcase">
+        
+        <div id="video-wrapper" class="video-container">
+          <video id="main-video" controls class="custom-video"></video>
+        </div>
+
+        <div id="audio-player-wrapper" class="player-row">
+          <button id="main-play-btn" class="huge-play-button" onclick="togglePlay()"><i class="fa-solid fa-play"></i></button>
+          <div class="huge-timeline-wrapper">
+            <div class="huge-timeline-track" onclick="setTimeline(this, event)">
+              <div class="huge-timeline-fill" id="ep-progress-bar"></div>
+            </div>
+            <div class="huge-timeline-times">
+              <span id="ep-current-time">0:00</span>
+              <span id="ep-total-time">0:00</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="episode-body">
+        <h3>About this Episode</h3>
+        <p id="ep-description">
+          In this session, we investigate how coding languages empower designers to build rich interactive aesthetics directly inside their browser windows. Learn how canvas elements, performance techniques, and simple scripts form modern responsive websites.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <audio id="hidden-audio" style="display: none;"></audio>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-copy">
+        &copy; 2026 NJTECH. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const episodesData = {
+      1: {
+        tag: "Episode 1",
+        title: "The Resurrection of Jack Claw-Nicheness or Fame?",
+        type: "video",
+        src: "Interview.mp4",
+        img: "episode1.png",
+        imgFallback: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=500&auto=format&fit=crop",
+        description: "In this episode, Brandon and Sofia interview cult classic celebrity Jack Claw, in a Frankenstein-esque revival. How's he been? What's he doing? And most importantly, how does one be a niche cult classic, over the choice of mainstream popularity?",
+      },
+      2: {
+        tag: "Episode 2",
+        title: "Did Girl Power Lose Power?",
+        type: "video",
+        src: "Roundtable.mp4",
+        img: "episode2.png",
+        imgFallback: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=500&auto=format&fit=crop",
+        description: "In this episode, Brandon, Neehal, and Sofia discuss feminism as of right now. Is it too talked about? Is it under-talked about? Or is it the way we talk about it? Join us as we have an open talk, laugh a little, and be a tad afraid of some bees.",
+      },
+      3: {
+        tag: "Episode 3",
+        title: "Beauty and Bias",
+        type: "video",
+        src: "episode3.mp4",
+        img: "episode3.png",
+        imgFallback: "https://images.unsplash.com/photo-1610116306796-6fea9f4fae38?q=80&w=500&auto=format&fit=crop",
+        description: "This podcast explores why many white influencers and celebrities adopt trends, styles, and features associated with Black culture while Black people have often been criticized for those same things. It examines social media, beauty standards, profit, and cultural influence, while discussing the double standards that can exist when trends move from Black communities into mainstream culture.",
+      },
+      4: {
+        tag: "Episode 4",
+        title: "Should Riot Grrrl Come Back",
+        type: "video",
+        src: "one.mp4",
+        img: "two.png",
+        imgFallback: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=500&auto=format&fit=crop",
+        description: "In this episode, Sofia dives into the web of the Riot Grrrl movement, in order to find whether or not we should have a comeback of the movement. It is in tandem with misogyny, the patriarchy, some great music, and of course, punk.",
+      },
+      5: {
+        tag: "Episode 5",
+        title: "Beyond the UFO",
+        type: "video",
+        src: "Podcast.mp4",
+        img: "episode5.png",
+        imgFallback: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=500&auto=format&fit=crop",
+        description: "Initially, Area 51 was just a secret military base, although it quickly became one of the world's biggest mysteries. Moreover, its connection to aliens, conspiracies, and internet culture has fascinated millions of people and continues to spark debate today.",
+      }
+    };
+
+    let activeEpisodeId = null;
+    const audioPlayer = document.getElementById('hidden-audio');
+    const videoPlayer = document.getElementById('main-video');
+    let trackingInterval = null;
+
+    function showHomeView(e) {
+      if (e) e.preventDefault();
+      stopActiveMedia();
+      
+      const epView = document.getElementById('episode-view');
+      const homeView = document.getElementById('home-view');
+      
+      epView.classList.remove('active');
+      setTimeout(() => {
+        epView.style.display = 'none';
+        homeView.style.display = 'block';
+        setTimeout(() => {
+          homeView.classList.add('active');
+        }, 50);
+      }, 400);
+    }
+
+    function openEpisodePage(id) {
+      activeEpisodeId = id;
+      const data = episodesData[id];
+      stopActiveMedia();
+      
+      document.getElementById('ep-tag').textContent = data.tag;
+      document.getElementById('ep-title').textContent = data.title;
+      document.getElementById('ep-description').textContent = data.description;
+      
+      const epImage = document.getElementById('ep-image');
+      epImage.src = data.img;
+      epImage.onerror = () => {
+        epImage.src = data.imgFallback;
+      };
+
+      renderPlayerUI();
+
+      const homeView = document.getElementById('home-view');
+      const epView = document.getElementById('episode-view');
+      
+      homeView.classList.remove('active');
+      setTimeout(() => {
+        homeView.style.display = 'none';
+        epView.style.display = 'block';
+        setTimeout(() => {
+          epView.classList.add('active');
+        }, 50);
+      }, 400);
+    }
+
+    function renderPlayerUI() {
+      const data = episodesData[activeEpisodeId];
+      
+      const videoWrapper = document.getElementById('video-wrapper');
+      const audioWrapper = document.getElementById('audio-player-wrapper');
+
+      videoWrapper.style.display = 'none';
+      audioWrapper.style.display = 'none';
+
+      document.getElementById('ep-progress-bar').style.width = '0%';
+      document.getElementById('ep-current-time').textContent = '0:00';
+      document.getElementById('ep-total-time').textContent = '0:00';
+      document.getElementById('ep-duration').textContent = '0:00';
+
+      if (data.type === 'video') {
+        videoWrapper.style.display = 'flex';
+        videoPlayer.src = data.src;
+        videoPlayer.load();
+      } else {
+        audioWrapper.style.display = 'flex';
+        audioPlayer.src = data.src;
+        audioPlayer.load();
+      }
+    }
+
+    function togglePlay() {
+      const playBtn = document.getElementById('main-play-btn');
+      
+      if (audioPlayer.paused) {
+        audioPlayer.play();
+        playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        startTracking();
+      } else {
+        audioPlayer.pause();
+        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+        stopTracking();
+      }
+    }
+
+    function startTracking() {
+      stopTracking();
+      trackingInterval = setInterval(() => {
+        if (audioPlayer.duration) {
+          const current = audioPlayer.currentTime;
+          const duration = audioPlayer.duration;
+          const percentage = (current / duration) * 100;
+          
+          document.getElementById('ep-progress-bar').style.width = `${percentage}%`;
+          document.getElementById('ep-current-time').textContent = formatTime(current);
+          document.getElementById('ep-total-time').textContent = formatTime(duration);
+          document.getElementById('ep-duration').textContent = formatTime(duration);
+        }
+      }, 250);
+    }
+
+    function stopTracking() {
+      if (trackingInterval) {
+        clearInterval(trackingInterval);
+        trackingInterval = null;
+      }
+    }
+
+    function setTimeline(el, event) {
+      if (!audioPlayer.duration) return;
+      const rect = el.getBoundingClientRect();
+      const clickPosition = (event.clientX - rect.left) / rect.width;
+      audioPlayer.currentTime = clickPosition * audioPlayer.duration;
+      
+      const percentage = clickPosition * 100;
+      document.getElementById('ep-progress-bar').style.width = `${percentage}%`;
+      document.getElementById('ep-current-time').textContent = formatTime(audioPlayer.currentTime);
+    }
+
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "0:00";
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    function stopActiveMedia() {
+      stopTracking();
+      
+      audioPlayer.pause();
+      audioPlayer.src = '';
+      
+      videoPlayer.pause();
+      videoPlayer.src = '';
+      
+      const playBtn = document.getElementById('main-play-btn');
+      if (playBtn) {
+        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+      }
+    }
+
+    audioPlayer.addEventListener('ended', () => {
+      const playBtn = document.getElementById('main-play-btn');
+      if (playBtn) {
+        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+      }
+      document.getElementById('ep-progress-bar').style.width = '0%';
+      document.getElementById('ep-current-time').textContent = '0:00';
+      stopTracking();
+    });
+
+    audioPlayer.addEventListener('loadedmetadata', () => {
+      document.getElementById('ep-total-time').textContent = formatTime(audioPlayer.duration);
+      document.getElementById('ep-duration').textContent = formatTime(audioPlayer.duration);
+    });
+  </script>
+</body>
+</html>
